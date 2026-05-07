@@ -4,539 +4,85 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>JujuyTV — Streaming en vivo</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root {
-  --red: #e8302a;
-  --red-dim: #7a1a17;
-  --bg: #080810;
-  --bg2: #0e0e1a;
-  --bg3: #141424;
-  --border: #1e1e32;
-  --text: #d4d4e8;
-  --muted: #555570;
-  --active: #1c1c38;
+  --red: #e8302a; --red-dim: #7a1a17;
+  --bg: #080810; --bg2: #0e0e1a; --bg3: #141424;
+  --border: #1e1e32; --text: #d4d4e8; --muted: #555570; --active: #1c1c38;
 }
-
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-body {
-  font-family: 'Barlow', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  height: 100dvh;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-/* ── TOPBAR ── */
-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 20px;
-  height: 52px;
-  background: var(--bg2);
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-  gap: 12px;
-}
-
-.logo {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-shrink: 0;
-}
-
-.logo-pulse {
-  width: 8px; height: 8px;
-  background: var(--red);
-  border-radius: 50%;
-  animation: pulse 2s infinite;
-}
-@keyframes pulse {
-  0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(232,48,42,0.5); }
-  50% { opacity: 0.6; box-shadow: 0 0 0 5px rgba(232,48,42,0); }
-}
-
-.logo-text {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 900;
-  font-size: 22px;
-  letter-spacing: 2px;
-  color: #fff;
-  line-height: 1;
-}
-.logo-text span { color: var(--red); }
-
-.logo-tag {
-  font-size: 10px;
-  color: var(--muted);
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  margin-top: 2px;
-  display: block;
-}
-
-.api-form {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  flex: 1;
-  max-width: 480px;
-}
-
-.api-form input {
-  flex: 1;
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 7px 12px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-family: 'Barlow', monospace;
-  outline: none;
-  transition: border-color 0.2s;
-}
-.api-form input:focus { border-color: var(--red-dim); }
-.api-form input::placeholder { color: var(--muted); }
-
-.btn {
-  background: var(--red);
-  color: #fff;
-  border: none;
-  padding: 7px 14px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 700;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background 0.15s;
-}
-.btn:hover { background: #c42520; }
-.btn-ghost {
-  background: transparent;
-  border: 1px solid var(--border);
-  color: var(--muted);
-  padding: 7px 12px;
-}
-.btn-ghost:hover { border-color: #444460; color: var(--text); background: transparent; }
-
-.clock {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 18px;
-  color: var(--muted);
-  letter-spacing: 2px;
-  flex-shrink: 0;
-}
-
-/* ── MAIN LAYOUT ── */
-.main {
-  display: flex;
-  flex: 1;
-  overflow: hidden;
-}
-
-/* ── SIDEBAR ── */
-.sidebar {
-  width: 220px;
-  background: var(--bg2);
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-  overflow: hidden;
-}
-
-.sidebar-head {
-  padding: 12px 14px 8px;
-  border-bottom: 1px solid var(--border);
-  flex-shrink: 0;
-}
-
-.sidebar-title {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 11px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--muted);
-}
-
-.channels-list {
-  overflow-y: auto;
-  flex: 1;
-}
-.channels-list::-webkit-scrollbar { width: 3px; }
-.channels-list::-webkit-scrollbar-thumb { background: var(--border); }
-
-.ch-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  cursor: pointer;
-  border-bottom: 1px solid var(--border);
-  border-left: 3px solid transparent;
-  transition: all 0.12s;
-  position: relative;
-}
-.ch-item:hover { background: var(--bg3); }
-.ch-item.active {
-  background: var(--active);
-  border-left-color: var(--red);
-}
-
-.ch-thumb {
-  width: 38px; height: 38px;
-  border-radius: 50%;
-  background: var(--bg3);
-  flex-shrink: 0;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  border: 1px solid var(--border);
-}
-.ch-thumb img { width: 100%; height: 100%; object-fit: cover; }
-
-.ch-meta { flex: 1; min-width: 0; }
-.ch-name {
-  font-size: 13px;
-  font-weight: 500;
-  color: #e0e0f0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-.ch-sub {
-  font-size: 10px;
-  color: var(--muted);
-  margin-top: 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.badge {
-  font-size: 9px;
-  padding: 2px 6px;
-  border-radius: 3px;
-  font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 700;
-  letter-spacing: 0.5px;
-  flex-shrink: 0;
-}
-.badge-live { background: var(--red); color: #fff; }
-.badge-idle { background: var(--bg3); color: var(--muted); border: 1px solid var(--border); }
-.badge-load { background: #1e2a1e; color: #4a8; border: 1px solid #2a3a2a; }
-
-/* ── PLAYER AREA ── */
-.player-area {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.video-wrap {
-  flex: 1;
-  background: #000;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-#yt-frame {
-  width: 100%;
-  height: 100%;
-  border: none;
-  display: none;
-}
-
-.splash {
-  text-align: center;
-  padding: 40px 20px;
-}
-.splash-logo {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 900;
-  font-size: 72px;
-  color: #1a1a2e;
-  letter-spacing: 6px;
-  line-height: 1;
-  margin-bottom: 16px;
-  user-select: none;
-}
-.splash-logo span { color: #2a1a1a; }
-.splash p { font-size: 14px; color: var(--muted); max-width: 320px; margin: 0 auto; line-height: 1.6; }
-.splash small { font-size: 11px; color: #333350; display: block; margin-top: 10px; }
-
-.no-live {
-  text-align: center;
-  padding: 40px 20px;
-}
-.no-live-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.3; }
-.no-live h3 { font-family: 'Barlow Condensed', sans-serif; font-size: 20px; color: var(--muted); margin-bottom: 6px; }
-.no-live p { font-size: 13px; color: #33334a; }
-.no-live .videos-list { margin-top: 20px; display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; max-width: 500px; }
-.vid-thumb {
-  width: 140px;
-  cursor: pointer;
-  border-radius: 6px;
-  overflow: hidden;
-  border: 1px solid var(--border);
-  transition: border-color 0.15s;
-}
-.vid-thumb:hover { border-color: var(--red-dim); }
-.vid-thumb img { width: 100%; aspect-ratio: 16/9; object-fit: cover; display: block; }
-.vid-thumb-title { font-size: 10px; color: var(--muted); padding: 4px 6px; background: var(--bg3); line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-/* ── INFO BAR ── */
-.infobar {
-  background: var(--bg2);
-  border-top: 1px solid var(--border);
-  padding: 10px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-shrink: 0;
-}
-
-.now-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
-.now-num {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-size: 28px;
-  font-weight: 900;
-  color: var(--red);
-  line-height: 1;
-  min-width: 20px;
-}
-.now-name {
-  font-size: 14px;
-  font-weight: 500;
-  color: #e8e8ff;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 260px;
-}
-.now-prog {
-  font-size: 11px;
-  color: var(--muted);
-  margin-top: 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 260px;
-}
-
-.ctrl-row { display: flex; gap: 6px; flex-shrink: 0; }
-.ctrl {
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  color: var(--muted);
-  width: 34px; height: 34px;
-  border-radius: 6px;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px;
-  transition: all 0.12s;
-}
-.ctrl:hover { border-color: #333355; color: var(--text); background: var(--active); }
-.ctrl-wide { width: auto; padding: 0 12px; gap: 6px; font-size: 12px; font-family: 'Barlow Condensed', sans-serif; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
-
-/* ── GUIDE PANEL ── */
-.guide {
-  background: var(--bg);
-  border-top: 1px solid var(--border);
-  max-height: 0;
-  overflow: hidden;
-  transition: max-height 0.3s ease;
-  flex-shrink: 0;
-}
-.guide.open { max-height: 180px; overflow-y: auto; }
-.guide::-webkit-scrollbar { width: 3px; }
-.guide::-webkit-scrollbar-thumb { background: var(--border); }
-
-.guide-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 9px 16px;
-  border-bottom: 1px solid var(--border);
-  cursor: pointer;
-  transition: background 0.1s;
-}
-.guide-row:hover, .guide-row.active { background: var(--active); }
-.gr-n { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; color: var(--muted); width: 20px; text-align: right; }
-.gr-name { font-size: 13px; font-weight: 500; color: #ccc; flex: 0 0 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.gr-prog { font-size: 11px; color: var(--muted); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-
-/* ── SETUP SCREEN ── */
-#setup-screen {
-  position: fixed; inset: 0;
-  background: var(--bg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 100;
-  padding: 20px;
-}
-
-.setup-card {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 40px;
-  max-width: 540px;
-  width: 100%;
-}
-
-.setup-logo {
-  font-family: 'Barlow Condensed', sans-serif;
-  font-weight: 900;
-  font-size: 48px;
-  letter-spacing: 4px;
-  color: #fff;
-  margin-bottom: 4px;
-}
-.setup-logo span { color: var(--red); }
-
-.setup-sub {
-  font-size: 13px;
-  color: var(--muted);
-  margin-bottom: 32px;
-  line-height: 1.6;
-}
-
-.form-group { margin-bottom: 20px; }
-.form-label {
-  display: block;
-  font-size: 11px;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 8px;
-  font-family: 'Barlow Condensed', sans-serif;
-}
-.form-input {
-  width: 100%;
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  color: var(--text);
-  padding: 10px 14px;
-  border-radius: 8px;
-  font-size: 13px;
-  font-family: monospace;
-  outline: none;
-  transition: border-color 0.2s;
-}
-.form-input:focus { border-color: var(--red-dim); }
-.form-input::placeholder { color: var(--muted); }
-
-.form-hint {
-  font-size: 11px;
-  color: #333355;
-  margin-top: 6px;
-  line-height: 1.5;
-}
-.form-hint a { color: #5555aa; text-decoration: none; }
-.form-hint a:hover { color: #8888cc; }
-
-.setup-steps {
-  background: var(--bg3);
-  border-radius: 8px;
-  padding: 16px;
-  margin-bottom: 24px;
-  font-size: 12px;
-  color: var(--muted);
-  line-height: 2;
-}
-.setup-steps strong { color: var(--text); }
-.setup-steps a { color: #5555aa; text-decoration: none; }
-
-.setup-btn {
-  width: 100%;
-  padding: 13px;
-  font-size: 14px;
-  letter-spacing: 2px;
-}
-
-#error-msg {
-  background: #2a0e0e;
-  border: 1px solid var(--red-dim);
-  color: #f08080;
-  padding: 10px 14px;
-  border-radius: 6px;
-  font-size: 12px;
-  margin-top: 12px;
-  display: none;
-}
-
-/* ── LOADING ── */
-.loading-overlay {
-  position: absolute; inset: 0;
-  background: rgba(8,8,16,0.9);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 12px;
-  display: none;
-}
-.spinner {
-  width: 32px; height: 32px;
-  border: 2px solid var(--border);
-  border-top-color: var(--red);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-.loading-text { font-size: 12px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; font-family: 'Barlow Condensed', sans-serif; }
-
-/* scrollbar global */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family:'Barlow',sans-serif; background:var(--bg); color:var(--text); height:100dvh; display:flex; flex-direction:column; overflow:hidden; }
+header { display:flex; align-items:center; justify-content:space-between; padding:0 20px; height:52px; background:var(--bg2); border-bottom:1px solid var(--border); flex-shrink:0; gap:12px; }
+.logo { display:flex; align-items:center; gap:10px; flex-shrink:0; }
+.logo-pulse { width:8px; height:8px; background:var(--red); border-radius:50%; animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(232,48,42,0.5)} 50%{opacity:0.6;box-shadow:0 0 0 5px rgba(232,48,42,0)} }
+.logo-text { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:22px; letter-spacing:2px; color:#fff; line-height:1; }
+.logo-text span { color:var(--red); }
+.logo-tag { font-size:10px; color:var(--muted); letter-spacing:3px; text-transform:uppercase; margin-top:2px; display:block; }
+.clock { font-family:'Barlow Condensed',sans-serif; font-size:18px; color:var(--muted); letter-spacing:2px; flex-shrink:0; }
+.main { display:flex; flex:1; overflow:hidden; }
+.sidebar { width:220px; background:var(--bg2); border-right:1px solid var(--border); display:flex; flex-direction:column; flex-shrink:0; overflow:hidden; }
+.sidebar-head { padding:12px 14px 8px; border-bottom:1px solid var(--border); flex-shrink:0; }
+.sidebar-title { font-family:'Barlow Condensed',sans-serif; font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--muted); }
+.channels-list { overflow-y:auto; flex:1; }
+.channels-list::-webkit-scrollbar { width:3px; }
+.channels-list::-webkit-scrollbar-thumb { background:var(--border); }
+.ch-item { display:flex; align-items:center; gap:10px; padding:11px 12px; cursor:pointer; border-bottom:1px solid var(--border); border-left:3px solid transparent; transition:all 0.12s; }
+.ch-item:hover { background:var(--bg3); }
+.ch-item.active { background:var(--active); border-left-color:var(--red); }
+.ch-thumb { width:38px; height:38px; border-radius:50%; background:var(--bg3); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:18px; border:1px solid var(--border); }
+.ch-meta { flex:1; min-width:0; }
+.ch-name { font-size:13px; font-weight:500; color:#e0e0f0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ch-sub { font-size:10px; color:var(--muted); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.badge { font-size:9px; padding:2px 6px; border-radius:3px; font-family:'Barlow Condensed',sans-serif; font-weight:700; letter-spacing:0.5px; flex-shrink:0; }
+.badge-live { background:var(--red); color:#fff; }
+.badge-idle { background:var(--bg3); color:var(--muted); border:1px solid var(--border); }
+.badge-load { background:#1e2a1e; color:#4a8; border:1px solid #2a3a2a; }
+.player-area { flex:1; display:flex; flex-direction:column; overflow:hidden; }
+.video-wrap { flex:1; background:#000; position:relative; display:flex; align-items:center; justify-content:center; }
+#yt-frame { width:100%; height:100%; border:none; display:none; }
+.splash { text-align:center; padding:40px 20px; }
+.splash-logo { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:72px; color:#1a1a2e; letter-spacing:6px; line-height:1; margin-bottom:16px; user-select:none; }
+.splash-logo span { color:#2a1a1a; }
+.splash p { font-size:14px; color:var(--muted); max-width:320px; margin:0 auto; line-height:1.6; }
+.splash small { font-size:11px; color:#333350; display:block; margin-top:10px; }
+.no-live { text-align:center; padding:40px 20px; display:none; flex-direction:column; align-items:center; }
+.no-live-icon { font-size:48px; margin-bottom:12px; opacity:0.3; }
+.no-live h3 { font-family:'Barlow Condensed',sans-serif; font-size:20px; color:var(--muted); margin-bottom:6px; }
+.no-live p { font-size:13px; color:#33334a; }
+.videos-list { margin-top:20px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:500px; }
+.vid-thumb { width:140px; cursor:pointer; border-radius:6px; overflow:hidden; border:1px solid var(--border); transition:border-color 0.15s; }
+.vid-thumb:hover { border-color:var(--red-dim); }
+.vid-thumb img { width:100%; aspect-ratio:16/9; object-fit:cover; display:block; }
+.vid-thumb-title { font-size:10px; color:var(--muted); padding:4px 6px; background:var(--bg3); line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.infobar { background:var(--bg2); border-top:1px solid var(--border); padding:10px 16px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-shrink:0; }
+.now-left { display:flex; align-items:center; gap:12px; min-width:0; }
+.now-num { font-family:'Barlow Condensed',sans-serif; font-size:28px; font-weight:900; color:var(--red); line-height:1; min-width:20px; }
+.now-name { font-size:14px; font-weight:500; color:#e8e8ff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:260px; }
+.now-prog { font-size:11px; color:var(--muted); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:260px; }
+.ctrl-row { display:flex; gap:6px; flex-shrink:0; }
+.ctrl { background:var(--bg3); border:1px solid var(--border); color:var(--muted); width:34px; height:34px; border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; transition:all 0.12s; }
+.ctrl:hover { border-color:#333355; color:var(--text); background:var(--active); }
+.ctrl-wide { width:auto; padding:0 12px; font-size:12px; font-family:'Barlow Condensed',sans-serif; font-weight:600; letter-spacing:1px; text-transform:uppercase; }
+.guide { background:var(--bg); border-top:1px solid var(--border); max-height:0; overflow:hidden; transition:max-height 0.3s ease; flex-shrink:0; }
+.guide.open { max-height:180px; overflow-y:auto; }
+.guide-row { display:flex; align-items:center; gap:10px; padding:9px 16px; border-bottom:1px solid var(--border); cursor:pointer; transition:background 0.1s; }
+.guide-row:hover, .guide-row.active { background:var(--active); }
+.gr-n { font-family:'Barlow Condensed',sans-serif; font-size:14px; color:var(--muted); width:20px; text-align:right; }
+.gr-name { font-size:13px; font-weight:500; color:#ccc; flex:0 0 160px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.gr-prog { font-size:11px; color:var(--muted); flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.loading-overlay { position:absolute; inset:0; background:rgba(8,8,16,0.9); flex-direction:column; align-items:center; justify-content:center; gap:12px; display:none; }
+.spinner { width:32px; height:32px; border:2px solid var(--border); border-top-color:var(--red); border-radius:50%; animation:spin 0.8s linear infinite; }
+@keyframes spin { to{transform:rotate(360deg)} }
+.loading-text { font-size:12px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; font-family:'Barlow Condensed',sans-serif; }
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-track { background:transparent; }
+::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
 </style>
 </head>
 <body>
 
-<!-- SETUP SCREEN -->
-<div id="setup-screen">
-  <div class="setup-card">
-    <div class="setup-logo">JUJUY<span>TV</span></div>
-    <div class="setup-sub">Streaming en vivo desde Jujuy · YouTube en tiempo real</div>
-
-    <div class="setup-steps">
-      <strong>Para obtener tu API Key de YouTube (gratis):</strong><br>
-      1. Ir a <a href="https://console.cloud.google.com" target="_blank">console.cloud.google.com</a><br>
-      2. Crear proyecto → Habilitar <strong>YouTube Data API v3</strong><br>
-      3. Credenciales → Crear credencial → <strong>Clave de API</strong><br>
-      4. Copiá y pegá la clave acá abajo
-    </div>
-
-    <div class="form-group">
-      <label class="form-label">API Key de YouTube Data v3</label>
-      <input class="form-input" id="api-key-input" type="text" placeholder="AIzaSy..." autocomplete="off" spellcheck="false">
-      <div class="form-hint">La clave se guarda solo en tu navegador. No se envía a ningún servidor.</div>
-    </div>
-
-    <button class="btn setup-btn" onclick="startApp()">▶ SINTONIZAR JUJUY TV</button>
-    <div id="error-msg"></div>
-  </div>
-</div>
-
-<!-- APP -->
 <header>
   <div class="logo">
     <div class="logo-pulse"></div>
@@ -545,50 +91,36 @@ header {
       <div class="logo-tag">en vivo · youtube</div>
     </div>
   </div>
-
-  <div class="api-form">
-    <input type="text" id="api-key-bar" placeholder="API Key de YouTube..." autocomplete="off" spellcheck="false">
-    <button class="btn" onclick="reloadAll()">↺ Actualizar</button>
-    <button class="btn btn-ghost" onclick="showSetup()">?</button>
+  <div style="display:flex;gap:8px;align-items:center">
+    <button class="ctrl ctrl-wide" onclick="reloadAll()">↺ Actualizar</button>
   </div>
-
   <div class="clock" id="clock">00:00</div>
 </header>
 
 <div class="main">
   <div class="sidebar">
-    <div class="sidebar-head">
-      <div class="sidebar-title">Canales · Jujuy</div>
-    </div>
+    <div class="sidebar-head"><div class="sidebar-title">Canales · Jujuy</div></div>
     <div class="channels-list" id="channels-list"></div>
   </div>
-
   <div class="player-area">
     <div class="video-wrap" id="video-wrap">
-      <iframe id="yt-frame"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowfullscreen>
-      </iframe>
-
+      <iframe id="yt-frame" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
       <div class="splash" id="splash">
         <div class="splash-logo">JUJUY<span>TV</span></div>
         <p>Seleccioná un canal para sintonizar el stream en vivo o los últimos videos.</p>
         <small>Todos los canales son de Jujuy, Argentina</small>
       </div>
-
-      <div class="no-live" id="no-live" style="display:none">
+      <div class="no-live" id="no-live">
         <div class="no-live-icon">📡</div>
         <h3>Sin transmisión en vivo ahora</h3>
         <p>Últimos videos del canal:</p>
         <div class="videos-list" id="videos-list"></div>
       </div>
-
       <div class="loading-overlay" id="loading-overlay">
         <div class="spinner"></div>
         <div class="loading-text">Sintonizando...</div>
       </div>
     </div>
-
     <div class="infobar">
       <div class="now-left">
         <div class="now-num" id="now-num">—</div>
@@ -598,218 +130,112 @@ header {
         </div>
       </div>
       <div class="ctrl-row">
-        <button class="ctrl" title="Canal anterior" onclick="prevCh()">▲</button>
-        <button class="ctrl" title="Canal siguiente" onclick="nextCh()">▼</button>
+        <button class="ctrl" onclick="prevCh()">▲</button>
+        <button class="ctrl" onclick="nextCh()">▼</button>
         <button class="ctrl ctrl-wide" onclick="toggleGuide()">≡ GUÍA</button>
-        <button class="ctrl ctrl-wide" onclick="refreshCurrent()" title="Actualizar canal">↺</button>
+        <button class="ctrl ctrl-wide" onclick="refreshCurrent()">↺</button>
       </div>
     </div>
-
-    <div class="guide" id="guide">
-      <div id="guide-rows"></div>
-    </div>
+    <div class="guide" id="guide"><div id="guide-rows"></div></div>
   </div>
 </div>
 
 <script>
+const API_KEY = 'AIzaSyAHehii1CnI_ZMbPAkqWD73XzX82eJyw3A';
+
 const CHANNELS = [
-  { id: 1, name: "El Tribuno",          handle: "eltribunojujuy",   sub: "Noticias",              emoji: "🗞️" },
-  { id: 2, name: "Ahora Jujuy",         handle: "AhoraJujuy",       sub: "FM Santa María 104.9",  emoji: "📻", note: "18 a 20 hs" },
-  { id: 3, name: "Coya TV",             handle: "coyatvok",         sub: "TV local",              emoji: "📺" },
-  { id: 4, name: "Stream MAX",          handle: "stream_max",       sub: "Entretenimiento",       emoji: "🎮" },
-  { id: 5, name: "Diario Somos Jujuy",  handle: "DiarioSomosJujuy", sub: "Noticias",              emoji: "📰" },
+  { id:1, name:"El Tribuno",         handle:"eltribunojujuy",   sub:"Noticias",             emoji:"🗞️" },
+  { id:2, name:"Ahora Jujuy",        handle:"AhoraJujuy",       sub:"FM Santa María 104.9", emoji:"📻", note:"18–20 hs" },
+  { id:3, name:"Coya TV",            handle:"coyatvok",         sub:"TV local",             emoji:"📺" },
+  { id:4, name:"Stream MAX",         handle:"stream_max",       sub:"Entretenimiento",      emoji:"🎮" },
+  { id:5, name:"Diario Somos Jujuy", handle:"DiarioSomosJujuy", sub:"Noticias",             emoji:"📰" },
 ];
 
-const API_KEY = 'AIzaSyAHehii1CnI_ZMbPAkqWD73XzX82eJyw3A';
-let current = -1;
-let guideOpen = false;
-let channelData = {}; // { handle: { channelId, live: {videoId, title}, recent: [] } }
+let current=-1, guideOpen=false, channelData={};
 
-// ── CLOCK ──
-function updateClock() {
-  const t = new Date().toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'});
-  document.getElementById('clock').textContent = t;
-}
-updateClock();
-setInterval(updateClock, 1000);
+function updateClock(){document.getElementById('clock').textContent=new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});}
+updateClock(); setInterval(updateClock,1000);
 
-// ── INIT ──
-window.onload = () => {
-  document.getElementById('setup-screen').style.display = 'none';
-  initApp();
-};
+window.onload=()=>initApp();
 
-function reloadAll() {
-  channelData = {};
-  initApp();
-}
+async function initApp(){renderSidebar();renderGuide();await Promise.all(CHANNELS.map(ch=>loadChannel(ch)));renderSidebar();renderGuide();}
+function reloadAll(){channelData={};initApp();}
 
-async function initApp() {
-  renderSidebar();
-  renderGuide();
-  // Cargar todos los canales en paralelo
-  await Promise.all(CHANNELS.map(ch => loadChannel(ch)));
-  renderSidebar();
-  renderGuide();
-}
-
-// ── API ──
-async function apiGet(path) {
-  const url = `https://www.googleapis.com/youtube/v3/${path}&key=${API_KEY}`;
-  const r = await fetch(url);
-  if (!r.ok) {
-    const err = await r.json();
-    throw new Error(err.error?.message || 'API error');
-  }
+async function apiGet(path){
+  const r=await fetch(`https://www.googleapis.com/youtube/v3/${path}&key=${API_KEY}`);
+  if(!r.ok){const e=await r.json();throw new Error(e.error?.message||'API error');}
   return r.json();
 }
 
-async function loadChannel(ch) {
-  try {
-    // 1. Resolver channelId desde handle
-    let channelId = channelData[ch.handle]?.channelId;
-    if (!channelId) {
-      const res = await apiGet(`channels?part=id,snippet&forHandle=${ch.handle}&maxResults=1`);
-      if (!res.items?.length) return;
-      channelId = res.items[0].id;
+async function loadChannel(ch){
+  try{
+    let cid=channelData[ch.handle]?.channelId;
+    if(!cid){const res=await apiGet(`channels?part=id&forHandle=${ch.handle}&maxResults=1`);if(!res.items?.length)return;cid=res.items[0].id;}
+    channelData[ch.handle]=channelData[ch.handle]||{};
+    channelData[ch.handle].channelId=cid;
+    const live=await apiGet(`search?part=snippet&channelId=${cid}&eventType=live&type=video&maxResults=1`);
+    if(live.items?.length){
+      channelData[ch.handle].live={videoId:live.items[0].id.videoId,title:live.items[0].snippet.title};
+      channelData[ch.handle].recent=[];
+    }else{
+      channelData[ch.handle].live=null;
+      const rec=await apiGet(`search?part=snippet&channelId=${cid}&order=date&type=video&maxResults=4`);
+      channelData[ch.handle].recent=(rec.items||[]).map(v=>({videoId:v.id.videoId,title:v.snippet.title,thumb:v.snippet.thumbnails?.medium?.url}));
     }
-    channelData[ch.handle] = channelData[ch.handle] || {};
-    channelData[ch.handle].channelId = channelId;
-
-    // 2. Buscar stream en vivo
-    const liveRes = await apiGet(`search?part=snippet&channelId=${channelId}&eventType=live&type=video&maxResults=1`);
-    if (liveRes.items?.length) {
-      const v = liveRes.items[0];
-      channelData[ch.handle].live = { videoId: v.id.videoId, title: v.snippet.title };
-      channelData[ch.handle].recent = [];
-    } else {
-      channelData[ch.handle].live = null;
-      // 3. Si no hay live, traer últimos 4 videos
-      const recentRes = await apiGet(`search?part=snippet&channelId=${channelId}&order=date&type=video&maxResults=4`);
-      channelData[ch.handle].recent = (recentRes.items || []).map(v => ({
-        videoId: v.id.videoId,
-        title: v.snippet.title,
-        thumb: v.snippet.thumbnails?.medium?.url
-      }));
-    }
-  } catch(e) {
-    console.warn(`Error cargando ${ch.handle}:`, e.message);
-    channelData[ch.handle] = channelData[ch.handle] || { error: e.message };
-  }
+  }catch(e){console.warn(`Error cargando ${ch.handle}:`,e.message);channelData[ch.handle]=channelData[ch.handle]||{error:e.message};}
 }
 
-// ── SIDEBAR ──
-function renderSidebar() {
-  const el = document.getElementById('channels-list');
-  el.innerHTML = CHANNELS.map((ch, i) => {
-    const d = channelData[ch.handle];
-    let badge = `<span class="badge badge-load">...</span>`;
-    if (d) {
-      if (d.error) badge = `<span class="badge badge-idle">error</span>`;
-      else if (d.live) badge = `<span class="badge badge-live">● VIVO</span>`;
-      else if (d.recent) badge = `<span class="badge badge-idle">grabado</span>`;
-    }
-    return `<div class="ch-item ${i===current?'active':''}" id="chi-${i}" onclick="tune(${i})">
-      <div class="ch-thumb">${ch.emoji}</div>
-      <div class="ch-meta">
-        <div class="ch-name">${ch.name}</div>
-        <div class="ch-sub">${ch.sub}${ch.note?' · '+ch.note:''}</div>
-      </div>
-      ${badge}
-    </div>`;
+function renderSidebar(){
+  document.getElementById('channels-list').innerHTML=CHANNELS.map((ch,i)=>{
+    const d=channelData[ch.handle];
+    let b=`<span class="badge badge-load">...</span>`;
+    if(d){if(d.error)b=`<span class="badge badge-idle">error</span>`;else if(d.live)b=`<span class="badge badge-live">● VIVO</span>`;else if(d.recent)b=`<span class="badge badge-idle">grabado</span>`;}
+    return `<div class="ch-item ${i===current?'active':''}" onclick="tune(${i})"><div class="ch-thumb">${ch.emoji}</div><div class="ch-meta"><div class="ch-name">${ch.name}</div><div class="ch-sub">${ch.sub}${ch.note?' · '+ch.note:''}</div></div>${b}</div>`;
   }).join('');
 }
 
-function renderGuide() {
-  const el = document.getElementById('guide-rows');
-  el.innerHTML = CHANNELS.map((ch, i) => {
-    const d = channelData[ch.handle];
-    const prog = d?.live ? `🔴 ${d.live.title}` : d?.recent?.length ? `📼 ${d.recent[0]?.title||''}` : '…';
-    return `<div class="guide-row ${i===current?'active':''}" onclick="tune(${i})">
-      <span class="gr-n">${ch.id}</span>
-      <span style="font-size:16px">${ch.emoji}</span>
-      <span class="gr-name">${ch.name}</span>
-      <span class="gr-prog">${prog}</span>
-    </div>`;
+function renderGuide(){
+  document.getElementById('guide-rows').innerHTML=CHANNELS.map((ch,i)=>{
+    const d=channelData[ch.handle];
+    const p=d?.live?`🔴 ${d.live.title}`:d?.recent?.length?`📼 ${d.recent[0]?.title||''}`:'…';
+    return `<div class="guide-row ${i===current?'active':''}" onclick="tune(${i})"><span class="gr-n">${ch.id}</span><span style="font-size:16px">${ch.emoji}</span><span class="gr-name">${ch.name}</span><span class="gr-prog">${p}</span></div>`;
   }).join('');
 }
 
-// ── TUNE ──
-async function tune(i) {
-  current = i;
-  const ch = CHANNELS[i];
-  document.getElementById('now-num').textContent = ch.id;
-  document.getElementById('now-name').textContent = ch.name;
-  document.getElementById('now-prog').textContent = ch.sub;
-
-  renderSidebar();
-  renderGuide();
-  showLoading(true);
-
-  // Recargar datos frescos del canal
-  await loadChannel(ch);
-  renderSidebar();
-  renderGuide();
-
-  const d = channelData[ch.handle];
-  showLoading(false);
-
-  if (!d || d.error) {
-    setNoLive(ch, []);
-    document.getElementById('now-prog').textContent = 'Error al conectar';
-    return;
-  }
-
-  if (d.live) {
-    playVideo(d.live.videoId);
-    document.getElementById('now-prog').textContent = `🔴 EN VIVO · ${d.live.title}`;
-  } else {
-    setNoLive(ch, d.recent || []);
-    document.getElementById('now-prog').textContent = 'Sin transmisión en vivo ahora';
-  }
+async function tune(i){
+  current=i;const ch=CHANNELS[i];
+  document.getElementById('now-num').textContent=ch.id;
+  document.getElementById('now-name').textContent=ch.name;
+  document.getElementById('now-prog').textContent=ch.sub;
+  renderSidebar();renderGuide();showLoading(true);
+  await loadChannel(ch);renderSidebar();renderGuide();
+  const d=channelData[ch.handle];showLoading(false);
+  if(!d||d.error){setNoLive([]);document.getElementById('now-prog').textContent='Error al conectar';return;}
+  if(d.live){playVideo(d.live.videoId);document.getElementById('now-prog').textContent=`🔴 EN VIVO · ${d.live.title}`;}
+  else{setNoLive(d.recent||[]);document.getElementById('now-prog').textContent='Sin transmisión en vivo ahora';}
 }
 
-function playVideo(videoId) {
-  document.getElementById('splash').style.display = 'none';
-  document.getElementById('no-live').style.display = 'none';
-  const frame = document.getElementById('yt-frame');
-  frame.style.display = 'block';
-  frame.src = `https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0`;
+function playVideo(id){
+  document.getElementById('splash').style.display='none';
+  document.getElementById('no-live').style.display='none';
+  const f=document.getElementById('yt-frame');f.style.display='block';
+  f.src=`https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
 }
 
-function setNoLive(ch, recent) {
-  document.getElementById('splash').style.display = 'none';
-  document.getElementById('yt-frame').style.display = 'none';
-  document.getElementById('yt-frame').src = '';
-  const nl = document.getElementById('no-live');
-  nl.style.display = 'flex';
-  nl.style.flexDirection = 'column';
-  nl.style.alignItems = 'center';
-  const vl = document.getElementById('videos-list');
-  if (recent.length) {
-    vl.innerHTML = recent.map(v => `
-      <div class="vid-thumb" onclick="playVideo('${v.videoId}')">
-        <img src="${v.thumb}" alt="" loading="lazy">
-        <div class="vid-thumb-title">${v.title}</div>
-      </div>
-    `).join('');
-  } else {
-    vl.innerHTML = `<p style="color:var(--muted);font-size:12px">No hay videos disponibles</p>`;
-  }
+function setNoLive(recent){
+  document.getElementById('splash').style.display='none';
+  const f=document.getElementById('yt-frame');f.style.display='none';f.src='';
+  const nl=document.getElementById('no-live');nl.style.display='flex';
+  document.getElementById('videos-list').innerHTML=recent.length
+    ?recent.map(v=>`<div class="vid-thumb" onclick="playVideo('${v.videoId}')"><img src="${v.thumb}" alt="" loading="lazy"><div class="vid-thumb-title">${v.title}</div></div>`).join('')
+    :`<p style="color:var(--muted);font-size:12px">No hay videos disponibles</p>`;
 }
 
-function showLoading(show) {
-  document.getElementById('loading-overlay').style.display = show ? 'flex' : 'none';
-}
-
-function prevCh() { tune((current - 1 + CHANNELS.length) % CHANNELS.length); }
-function nextCh() { tune((current + 1) % CHANNELS.length); }
-function refreshCurrent() { if (current >= 0) tune(current); }
-
-function toggleGuide() {
-  guideOpen = !guideOpen;
-  document.getElementById('guide').classList.toggle('open', guideOpen);
-}
+function showLoading(s){document.getElementById('loading-overlay').style.display=s?'flex':'none';}
+function prevCh(){tune((current-1+CHANNELS.length)%CHANNELS.length);}
+function nextCh(){tune((current+1)%CHANNELS.length);}
+function refreshCurrent(){if(current>=0)tune(current);}
+function toggleGuide(){guideOpen=!guideOpen;document.getElementById('guide').classList.toggle('open',guideOpen);}
 </script>
 </body>
 </html>
