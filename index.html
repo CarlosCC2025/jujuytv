@@ -3,239 +3,184 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JujuyTV — Streaming en vivo</title>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<title>TRIBUNOtv — Programación en vivo</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --red: #e8302a; --red-dim: #7a1a17;
-  --bg: #080810; --bg2: #0e0e1a; --bg3: #141424;
-  --border: #1e1e32; --text: #d4d4e8; --muted: #555570; --active: #1c1c38;
+:root{
+  --red:#e8302a;--red2:#a51f1b;--bg:#07070d;--bg2:#0f101a;--bg3:#171827;--panel:#111220;
+  --border:#24263a;--text:#ececf8;--muted:#85869c;--soft:#c7c7d6;--green:#23b56b;--amber:#e6a23c;
 }
-* { box-sizing:border-box; margin:0; padding:0; }
-body { font-family:'Barlow',sans-serif; background:var(--bg); color:var(--text); height:100dvh; display:flex; flex-direction:column; overflow:hidden; }
-header { display:flex; align-items:center; justify-content:space-between; padding:0 20px; height:52px; background:var(--bg2); border-bottom:1px solid var(--border); flex-shrink:0; gap:12px; }
-.logo { display:flex; align-items:center; gap:10px; flex-shrink:0; }
-.logo-pulse { width:8px; height:8px; background:var(--red); border-radius:50%; animation:pulse 2s infinite; }
-@keyframes pulse { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(232,48,42,0.5)} 50%{opacity:0.6;box-shadow:0 0 0 5px rgba(232,48,42,0)} }
-.logo-text { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:22px; letter-spacing:2px; color:#fff; line-height:1; }
-.logo-text span { color:var(--red); }
-.logo-tag { font-size:10px; color:var(--muted); letter-spacing:3px; text-transform:uppercase; margin-top:2px; display:block; }
-.clock { font-family:'Barlow Condensed',sans-serif; font-size:18px; color:var(--muted); letter-spacing:2px; flex-shrink:0; }
-.main { display:flex; flex:1; overflow:hidden; }
-.sidebar { width:220px; background:var(--bg2); border-right:1px solid var(--border); display:flex; flex-direction:column; flex-shrink:0; overflow:hidden; }
-.sidebar-head { padding:12px 14px 8px; border-bottom:1px solid var(--border); flex-shrink:0; }
-.sidebar-title { font-family:'Barlow Condensed',sans-serif; font-size:11px; letter-spacing:3px; text-transform:uppercase; color:var(--muted); }
-.channels-list { overflow-y:auto; flex:1; }
-.channels-list::-webkit-scrollbar { width:3px; }
-.channels-list::-webkit-scrollbar-thumb { background:var(--border); }
-.ch-item { display:flex; align-items:center; gap:10px; padding:11px 12px; cursor:pointer; border-bottom:1px solid var(--border); border-left:3px solid transparent; transition:all 0.12s; }
-.ch-item:hover { background:var(--bg3); }
-.ch-item.active { background:var(--active); border-left-color:var(--red); }
-.ch-thumb { width:38px; height:38px; border-radius:50%; background:var(--bg3); flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:18px; border:1px solid var(--border); }
-.ch-meta { flex:1; min-width:0; }
-.ch-name { font-size:13px; font-weight:500; color:#e0e0f0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.ch-sub { font-size:10px; color:var(--muted); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.badge { font-size:9px; padding:2px 6px; border-radius:3px; font-family:'Barlow Condensed',sans-serif; font-weight:700; letter-spacing:0.5px; flex-shrink:0; }
-.badge-live { background:var(--red); color:#fff; }
-.badge-idle { background:var(--bg3); color:var(--muted); border:1px solid var(--border); }
-.badge-load { background:#1e2a1e; color:#4a8; border:1px solid #2a3a2a; }
-.player-area { flex:1; display:flex; flex-direction:column; overflow:hidden; }
-.video-wrap { flex:1; background:#000; position:relative; display:flex; align-items:center; justify-content:center; }
-#yt-frame { width:100%; height:100%; border:none; display:none; }
-.splash { text-align:center; padding:40px 20px; }
-.splash-logo { font-family:'Barlow Condensed',sans-serif; font-weight:900; font-size:72px; color:#1a1a2e; letter-spacing:6px; line-height:1; margin-bottom:16px; user-select:none; }
-.splash-logo span { color:#2a1a1a; }
-.splash p { font-size:14px; color:var(--muted); max-width:320px; margin:0 auto; line-height:1.6; }
-.splash small { font-size:11px; color:#333350; display:block; margin-top:10px; }
-.no-live { text-align:center; padding:40px 20px; display:none; flex-direction:column; align-items:center; }
-.no-live-icon { font-size:48px; margin-bottom:12px; opacity:0.3; }
-.no-live h3 { font-family:'Barlow Condensed',sans-serif; font-size:20px; color:var(--muted); margin-bottom:6px; }
-.no-live p { font-size:13px; color:#33334a; }
-.videos-list { margin-top:20px; display:flex; flex-wrap:wrap; gap:8px; justify-content:center; max-width:500px; }
-.vid-thumb { width:140px; cursor:pointer; border-radius:6px; overflow:hidden; border:1px solid var(--border); transition:border-color 0.15s; }
-.vid-thumb:hover { border-color:var(--red-dim); }
-.vid-thumb img { width:100%; aspect-ratio:16/9; object-fit:cover; display:block; }
-.vid-thumb-title { font-size:10px; color:var(--muted); padding:4px 6px; background:var(--bg3); line-height:1.3; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.infobar { background:var(--bg2); border-top:1px solid var(--border); padding:10px 16px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-shrink:0; }
-.now-left { display:flex; align-items:center; gap:12px; min-width:0; }
-.now-num { font-family:'Barlow Condensed',sans-serif; font-size:28px; font-weight:900; color:var(--red); line-height:1; min-width:20px; }
-.now-name { font-size:14px; font-weight:500; color:#e8e8ff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:260px; }
-.now-prog { font-size:11px; color:var(--muted); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:260px; }
-.ctrl-row { display:flex; gap:6px; flex-shrink:0; }
-.ctrl { background:var(--bg3); border:1px solid var(--border); color:var(--muted); width:34px; height:34px; border-radius:6px; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:16px; transition:all 0.12s; }
-.ctrl:hover { border-color:#333355; color:var(--text); background:var(--active); }
-.ctrl-wide { width:auto; padding:0 12px; font-size:12px; font-family:'Barlow Condensed',sans-serif; font-weight:600; letter-spacing:1px; text-transform:uppercase; }
-.guide { background:var(--bg); border-top:1px solid var(--border); max-height:0; overflow:hidden; transition:max-height 0.3s ease; flex-shrink:0; }
-.guide.open { max-height:180px; overflow-y:auto; }
-.guide-row { display:flex; align-items:center; gap:10px; padding:9px 16px; border-bottom:1px solid var(--border); cursor:pointer; transition:background 0.1s; }
-.guide-row:hover, .guide-row.active { background:var(--active); }
-.gr-n { font-family:'Barlow Condensed',sans-serif; font-size:14px; color:var(--muted); width:20px; text-align:right; }
-.gr-name { font-size:13px; font-weight:500; color:#ccc; flex:0 0 160px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.gr-prog { font-size:11px; color:var(--muted); flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.loading-overlay { position:absolute; inset:0; background:rgba(8,8,16,0.9); flex-direction:column; align-items:center; justify-content:center; gap:12px; display:none; }
-.spinner { width:32px; height:32px; border:2px solid var(--border); border-top-color:var(--red); border-radius:50%; animation:spin 0.8s linear infinite; }
-@keyframes spin { to{transform:rotate(360deg)} }
-.loading-text { font-size:12px; color:var(--muted); letter-spacing:2px; text-transform:uppercase; font-family:'Barlow Condensed',sans-serif; }
-::-webkit-scrollbar { width:4px; }
-::-webkit-scrollbar-track { background:transparent; }
-::-webkit-scrollbar-thumb { background:var(--border); border-radius:2px; }
+*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%}
+body{font-family:'Barlow',sans-serif;background:radial-gradient(circle at top left,#161729 0,#07070d 42%,#050508 100%);color:var(--text);height:100dvh;display:flex;flex-direction:column;overflow:hidden}
+header{height:58px;background:rgba(15,16,26,.96);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 18px;gap:12px;flex-shrink:0}
+.logo{display:flex;align-items:center;gap:12px;min-width:210px}.pulse{width:10px;height:10px;background:var(--red);border-radius:50%;animation:pulse 1.7s infinite}.brand{font-family:'Barlow Condensed',sans-serif;font-weight:900;letter-spacing:1px;font-size:27px;line-height:1;color:#fff}.brand span{color:var(--red)}.tag{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);margin-top:1px}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(232,48,42,.45);opacity:1}50%{box-shadow:0 0 0 7px rgba(232,48,42,0);opacity:.7}}
+.top-actions{display:flex;align-items:center;gap:8px}.clock{font-family:'Barlow Condensed',sans-serif;font-size:19px;letter-spacing:2px;color:var(--soft);min-width:52px;text-align:right}.btn{background:var(--bg3);border:1px solid var(--border);color:var(--soft);border-radius:8px;height:34px;padding:0 12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:1px;text-transform:uppercase;cursor:pointer}.btn:hover{border-color:var(--red2);color:#fff}.main{display:grid;grid-template-columns:260px 1fr 330px;flex:1;min-height:0}.sidebar{background:rgba(15,16,26,.96);border-right:1px solid var(--border);display:flex;flex-direction:column;min-height:0}.side-title{font-family:'Barlow Condensed',sans-serif;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);padding:14px 16px;border-bottom:1px solid var(--border)}.channels{overflow:auto}.ch{display:flex;gap:11px;align-items:center;padding:14px 14px;border-bottom:1px solid var(--border);cursor:pointer;border-left:4px solid transparent}.ch:hover{background:rgba(255,255,255,.025)}.ch.active{background:#1a1b31;border-left-color:var(--red)}.ch-logo{width:42px;height:42px;border-radius:12px;background:#202136;display:flex;align-items:center;justify-content:center;font-size:22px;border:1px solid var(--border)}.ch-info{flex:1;min-width:0}.ch-name{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.ch-sub{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.25}.state{font-family:'Barlow Condensed',sans-serif;font-size:10px;font-weight:800;letter-spacing:.8px;padding:3px 6px;border-radius:5px;text-transform:uppercase}.state.live{background:var(--red);color:#fff}.state.now{background:#183924;color:#7dffaa}.state.idle{background:#24263a;color:var(--muted)}.player-area{display:flex;flex-direction:column;min-width:0;min-height:0}.video{position:relative;background:#000;flex:1;display:flex;align-items:center;justify-content:center;min-height:280px}iframe{border:0;width:100%;height:100%;display:none}.splash{max-width:620px;text-align:center;padding:30px}.splash h1{font-family:'Barlow Condensed',sans-serif;font-size:74px;letter-spacing:2px;line-height:.9}.splash h1 span{color:var(--red)}.splash p{color:var(--muted);line-height:1.55;margin-top:16px;font-size:15px}.playbox{display:none;text-align:center;padding:28px;max-width:620px}.playbox h2{font-family:'Barlow Condensed',sans-serif;font-size:28px;margin-bottom:8px}.playbox p{color:var(--muted);font-size:14px;line-height:1.55}.play-actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:18px}.linkbtn{display:inline-flex;align-items:center;justify-content:center;gap:8px;background:var(--red);color:#fff;text-decoration:none;border-radius:10px;padding:10px 16px;font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:1px;text-transform:uppercase}.linkbtn.secondary{background:#22243a;color:#ddd;border:1px solid var(--border)}.info{height:76px;background:rgba(15,16,26,.98);border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:14px;padding:10px 18px;flex-shrink:0}.now{display:flex;align-items:center;gap:13px;min-width:0}.num{font-family:'Barlow Condensed',sans-serif;font-size:34px;font-weight:900;color:var(--red);min-width:28px}.now-name{font-weight:700;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.now-prog{font-size:12px;color:var(--muted);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:720px}.rightbar{background:rgba(10,11,20,.98);border-left:1px solid var(--border);display:flex;flex-direction:column;min-height:0}.section-title{font-family:'Barlow Condensed',sans-serif;font-size:13px;letter-spacing:3px;text-transform:uppercase;color:var(--muted);padding:14px 16px;border-bottom:1px solid var(--border)}.guide{overflow:auto;padding:10px 10px 14px}.program{border:1px solid var(--border);background:rgba(255,255,255,.025);border-radius:12px;padding:12px;margin-bottom:10px}.program.current{border-color:rgba(35,181,107,.7);box-shadow:0 0 0 1px rgba(35,181,107,.25) inset}.program.special{border-color:rgba(230,162,60,.5)}.ptime{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:#fff}.ptitle{font-weight:700;margin-top:4px;font-size:14px}.pdesc{font-size:12px;color:var(--muted);line-height:1.35;margin-top:6px}.pchan{font-size:11px;color:var(--red);font-weight:700;margin-top:8px;text-transform:uppercase;letter-spacing:.8px}.recent{border-top:1px solid var(--border);padding-bottom:12px}.recent-list{padding:10px}.video-card{display:block;text-decoration:none;color:var(--text);border:1px solid var(--border);border-radius:10px;padding:10px;margin-bottom:8px;background:rgba(255,255,255,.025)}.video-card small{display:block;color:var(--muted);margin-top:4px}.note{font-size:11px;color:var(--muted);line-height:1.4;padding:12px 16px;border-top:1px solid var(--border)}
+@media(max-width:980px){body{overflow:auto;height:auto;min-height:100dvh}.main{grid-template-columns:1fr}.sidebar,.rightbar{border:0}.player-area{min-height:560px}.rightbar{min-height:400px}.info{height:auto;align-items:flex-start;flex-direction:column}.top-actions .btn:nth-child(2){display:none}}
 </style>
 </head>
 <body>
-
 <header>
-  <div class="logo">
-    <div class="logo-pulse"></div>
-    <div>
-      <div class="logo-text">JUJUY<span>TV</span></div>
-      <div class="logo-tag">en vivo · youtube</div>
-    </div>
-  </div>
-  <div style="display:flex;gap:8px;align-items:center">
-    <button class="ctrl ctrl-wide" onclick="reloadAll()">↺ Actualizar</button>
-  </div>
-  <div class="clock" id="clock">00:00</div>
+  <div class="logo"><div class="pulse"></div><div><div class="brand">TRIBUNO<span>tv</span></div><div class="tag">vivo · programas · jujuy</div></div></div>
+  <div class="top-actions"><button class="btn" onclick="showCurrentProgram()">Ahora</button><button class="btn" onclick="refreshCurrentLive()">Actualizar vivo</button><div class="clock" id="clock">00:00</div></div>
 </header>
-
-<div class="main">
-  <div class="sidebar">
-    <div class="sidebar-head"><div class="sidebar-title">Canales · Jujuy</div></div>
-    <div class="channels-list" id="channels-list"></div>
-  </div>
-  <div class="player-area">
-    <div class="video-wrap" id="video-wrap">
-      <iframe id="yt-frame" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-      <div class="splash" id="splash">
-        <div class="splash-logo">JUJUY<span>TV</span></div>
-        <p>Seleccioná un canal para sintonizar el stream en vivo o los últimos videos.</p>
-        <small>Todos los canales son de Jujuy, Argentina</small>
-      </div>
-      <div class="no-live" id="no-live">
-        <div class="no-live-icon">📡</div>
-        <h3>Sin transmisión en vivo ahora</h3>
-        <p>Últimos videos del canal:</p>
-        <div class="videos-list" id="videos-list"></div>
-      </div>
-      <div class="loading-overlay" id="loading-overlay">
-        <div class="spinner"></div>
-        <div class="loading-text">Sintonizando...</div>
-      </div>
+<main class="main">
+  <aside class="sidebar"><div class="side-title">Canales disponibles</div><div class="channels" id="channels"></div></aside>
+  <section class="player-area">
+    <div class="video">
+      <iframe id="ytFrame" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+      <div class="splash" id="splash"><h1>TRIBUNO<span>tv</span></h1><p>Grilla digital de programas jujeños en YouTube. Esta versión usa API limitada con caché local para detectar el video en vivo real y evitar el error del embed por canal. La grilla fija reduce consultas innecesarias.</p></div>
+      <div class="playbox" id="playbox"><h2 id="playTitle">Canal seleccionado</h2><p id="playText">Este canal todavía no tiene cargado el Channel ID para iframe directo. Podés abrir el vivo oficial de YouTube o completar el ID una sola vez en la configuración.</p><div class="play-actions" id="playActions"></div></div>
     </div>
-    <div class="infobar">
-      <div class="now-left">
-        <div class="now-num" id="now-num">—</div>
-        <div>
-          <div class="now-name" id="now-name">Sin señal</div>
-          <div class="now-prog" id="now-prog">Seleccioná un canal</div>
-        </div>
-      </div>
-      <div class="ctrl-row">
-        <button class="ctrl" onclick="prevCh()">▲</button>
-        <button class="ctrl" onclick="nextCh()">▼</button>
-        <button class="ctrl ctrl-wide" onclick="toggleGuide()">≡ GUÍA</button>
-        <button class="ctrl ctrl-wide" onclick="refreshCurrent()">↺</button>
-      </div>
-    </div>
-    <div class="guide" id="guide"><div id="guide-rows"></div></div>
-  </div>
-</div>
-
+    <div class="info"><div class="now"><div class="num" id="nowNum">—</div><div><div class="now-name" id="nowName">Sin canal seleccionado</div><div class="now-prog" id="nowProg">Elegí un canal o presioná “Ahora”.</div></div></div><div class="top-actions"><button class="btn" onclick="prevChannel()">▲</button><button class="btn" onclick="nextChannel()">▼</button></div></div>
+  </section>
+  <aside class="rightbar"><div class="section-title">Programación</div><div class="guide" id="guide"></div><div class="recent"><div class="section-title">Últimos videos / RSS cache</div><div class="recent-list" id="recentList"><div class="note">El HTML busca archivos JSON cacheados en <b>/cache/youtube/</b>. Si todavía no existe backend, muestra enlaces directos a YouTube.</div></div></div><div class="note">La API Key está en el HTML y debe quedar restringida por dominio en Google Cloud. El vivo se consulta con caché local de 10 minutos y se reproduce por videoId real.</div></aside>
+</main>
 <script>
-const API_KEY = 'AIzaSyCzmmLR-JB_KbK4IsZkca59RWaGU_ZPgtw';
+const TZ = 'America/Argentina/Jujuy';
+const API_KEY = 'AIzaSyAHehii1CnI_ZMbPAkqWD73XzX82eJyw3A';
+const LIVE_CACHE_MINUTES = 10;
 
+// IMPORTANTE:
+// - API Key incluida en HTML porque el proyecto está restringido por dominio en Google Cloud.
+// - La página usa caché local para no repetir consultas por cada clic.
+// - Se busca el videoId real del vivo y se embebe /embed/VIDEO_ID para evitar el error del iframe por canal.
 const CHANNELS = [
-  { id:1, name:"El Tribuno",         handle:"eltribunojujuy",   sub:"Noticias",             emoji:"🗞️" },
-  { id:2, name:"Ahora Jujuy",        handle:"AhoraJujuy",       sub:"FM Santa María 104.9", emoji:"📻", note:"18–20 hs" },
-  { id:3, name:"Coya TV",            handle:"coyatvok",         sub:"TV local",             emoji:"📺" },
-  { id:4, name:"Stream MAX",         handle:"stream_max",       sub:"Entretenimiento",      emoji:"🎮" },
-  { id:5, name:"Diario Somos Jujuy", handle:"DiarioSomosJujuy", sub:"Noticias",             emoji:"📰" },
+  { id:1, slug:'eltribuno', name:'El Tribuno de Jujuy', handle:'eltribunojujuy', emoji:'🗞️', sub:'Noticias · TV digital', channelId:'UCMywWPYWcnMqkgIOdyeYgyA', liveUrl:'https://www.youtube.com/@eltribunojujuy/live', videosUrl:'https://www.youtube.com/@eltribunojujuy/videos', cache:'/cache/youtube/eltribuno.json' },
+  { id:2, slug:'fmsol', name:'FM Sol Jujuy', handle:'FMSolJujuy', emoji:'☀️', sub:'FM Sol 100.1', channelId:'UCncHTTKVMR4Sw7dVqQhVf9A', liveUrl:'https://www.youtube.com/@FMSolJujuy/live', videosUrl:'https://www.youtube.com/@FMSolJujuy/videos', cache:'/cache/youtube/fmsol.json' },
+  { id:3, slug:'jujuyfm', name:'Jujuy FM', handle:'jujuyfm4979', emoji:'📻', sub:'Radio y streaming', channelId:'UCqA6wLDYdEwRm3Q3Yu-rFHQ', liveUrl:'https://www.youtube.com/@jujuyfm4979/live', videosUrl:'https://www.youtube.com/@jujuyfm4979/videos', cache:'/cache/youtube/jujuyfm.json' }
 ];
 
-let current=-1, guideOpen=false, channelData={};
+// dow: 1=lunes ... 5=viernes. Si se omite, se asume lunes a viernes.
+const PROGRAMS = [
+  { ch:'eltribuno', title:'El Matutino', start:'10:00', end:'13:00', days:[1,2,3,4,5], desc:'Actualidad de Jujuy con Juani Bepre, Flor García y Franco Mancilla.' },
+  { ch:'eltribuno', title:'Central de Noticias', start:'20:00', end:'21:00', days:[1,2,3,4,5], desc:'Resumen del día de El Tribuno de Jujuy. El noticiero de la gente bien informada.' },
+  { ch:'eltribuno', title:'Transmisiones especiales', start:'--:--', end:'--:--', special:true, desc:'Coberturas especiales según agenda periodística.' },
+  { ch:'fmsol', title:'Mañana de Sol', start:'09:00', end:'12:00', days:[1,2,3,4,5], desc:'Anticipos de la jornada, información y análisis con Carla Alfonso y Hugo Krasnobroda.' },
+  { ch:'fmsol', title:'Todos a Bordo', start:'19:00', end:'20:30', days:[2], desc:'Programa semanal de FM Sol Jujuy.' },
+  { ch:'jujuyfm', title:'Mate Cocido', start:'15:00', end:'18:00', days:[1,2,3,4,5], desc:'Programa de tarde de Jujuy FM.' },
+  { ch:'jujuyfm', title:'Un día Perfecto', start:'18:00', end:'21:00', days:[1,2,3,4,5], desc:'Programa vespertino de Jujuy FM.' },
+  { ch:'jujuyfm', title:'Pizpireta', start:'21:30', end:'22:30', days:[1,2,3,4,5], desc:'Programa nocturno de Jujuy FM.' },
+  { ch:'jujuyfm', title:'Jujuy es Producción', start:'19:00', end:'21:00', special:true, desc:'Programa de producción. Días salteados según agenda.' },
+  { ch:'jujuyfm', title:'La Propina', start:'19:00', end:'21:00', days:[4], desc:'Jueves con Nicolás Coletti.' },
+  { ch:'jujuyfm', title:'Reencontrame en tus recuerdos', start:'21:00', end:'23:00', special:true, desc:'Con Sandra Noemí Morales. Días salteados según agenda.' }
+];
 
-function updateClock(){document.getElementById('clock').textContent=new Date().toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'});}
-updateClock(); setInterval(updateClock,1000);
+let current = -1;
+const $ = id => document.getElementById(id);
 
-window.onload=()=>initApp();
+function updateClock(){ $('clock').textContent = new Date().toLocaleTimeString('es-AR',{timeZone:TZ,hour:'2-digit',minute:'2-digit'}); }
+setInterval(updateClock,1000); updateClock();
 
-async function initApp(){renderSidebar();renderGuide();await Promise.all(CHANNELS.map(ch=>loadChannel(ch)));renderSidebar();renderGuide();}
-function reloadAll(){channelData={};initApp();}
+function dayNow(){ return Number(new Intl.DateTimeFormat('es-AR',{timeZone:TZ,weekday:'short'}).formatToParts(new Date()).find(p=>p.type==='weekday') ? new Date().toLocaleDateString('en-US',{timeZone:TZ,weekday:'short'}) : 0); }
+function getDow(){ const d = new Date().toLocaleDateString('en-US',{timeZone:TZ,weekday:'short'}); return {Mon:1,Tue:2,Wed:3,Thu:4,Fri:5,Sat:6,Sun:0}[d]; }
+function minutes(hhmm){ if(!hhmm || hhmm.includes('--')) return null; const [h,m]=hhmm.split(':').map(Number); return h*60+m; }
+function nowMinutes(){ const parts = new Intl.DateTimeFormat('es-AR',{timeZone:TZ,hour:'2-digit',minute:'2-digit',hour12:false}).formatToParts(new Date()); return Number(parts.find(p=>p.type==='hour').value)*60 + Number(parts.find(p=>p.type==='minute').value); }
+function isCurrent(p){ if(p.special) return false; const dow=getDow(); const days=p.days || [1,2,3,4,5]; const n=nowMinutes(), s=minutes(p.start), e=minutes(p.end); return days.includes(dow) && s!==null && e!==null && n>=s && n<e; }
+function channelBySlug(slug){ return CHANNELS.find(c=>c.slug===slug); }
+function programsForChannel(slug){ return PROGRAMS.filter(p=>p.ch===slug); }
+function currentProgram(){ return PROGRAMS.find(isCurrent) || null; }
 
-async function apiGet(path){
-  const r=await fetch(`https://www.googleapis.com/youtube/v3/${path}&key=${API_KEY}`);
-  if(!r.ok){const e=await r.json();throw new Error(e.error?.message||'API error');}
-  return r.json();
-}
-
-async function loadChannel(ch){
-  try{
-    let cid=channelData[ch.handle]?.channelId;
-    if(!cid){const res=await apiGet(`channels?part=id&forHandle=${ch.handle}&maxResults=1`);if(!res.items?.length)return;cid=res.items[0].id;}
-    channelData[ch.handle]=channelData[ch.handle]||{};
-    channelData[ch.handle].channelId=cid;
-    const live=await apiGet(`search?part=snippet&channelId=${cid}&eventType=live&type=video&maxResults=1`);
-    if(live.items?.length){
-      channelData[ch.handle].live={videoId:live.items[0].id.videoId,title:live.items[0].snippet.title};
-      channelData[ch.handle].recent=[];
-    }else{
-      channelData[ch.handle].live=null;
-      const rec=await apiGet(`search?part=snippet&channelId=${cid}&order=date&type=video&maxResults=4`);
-      channelData[ch.handle].recent=(rec.items||[]).map(v=>({videoId:v.id.videoId,title:v.snippet.title,thumb:v.snippet.thumbnails?.medium?.url}));
-    }
-  }catch(e){console.warn(`Error cargando ${ch.handle}:`,e.message);channelData[ch.handle]=channelData[ch.handle]||{error:e.message};}
-}
-
-function renderSidebar(){
-  document.getElementById('channels-list').innerHTML=CHANNELS.map((ch,i)=>{
-    const d=channelData[ch.handle];
-    let b=`<span class="badge badge-load">...</span>`;
-    if(d){if(d.error)b=`<span class="badge badge-idle">error</span>`;else if(d.live)b=`<span class="badge badge-live">● VIVO</span>`;else if(d.recent)b=`<span class="badge badge-idle">grabado</span>`;}
-    return `<div class="ch-item ${i===current?'active':''}" onclick="tune(${i})"><div class="ch-thumb">${ch.emoji}</div><div class="ch-meta"><div class="ch-name">${ch.name}</div><div class="ch-sub">${ch.sub}${ch.note?' · '+ch.note:''}</div></div>${b}</div>`;
+function renderChannels(){
+  $('channels').innerHTML = CHANNELS.map((ch,i)=>{
+    const liveNow = programsForChannel(ch.slug).some(isCurrent);
+    return `<div class="ch ${i===current?'active':''}" onclick="tune(${i})"><div class="ch-logo">${ch.emoji}</div><div class="ch-info"><div class="ch-name">${ch.name}</div><div class="ch-sub">${ch.sub}<br>@${ch.handle}</div></div><span class="state ${liveNow?'now':'idle'}">${liveNow?'Ahora':'Canal'}</span></div>`;
   }).join('');
 }
-
 function renderGuide(){
-  document.getElementById('guide-rows').innerHTML=CHANNELS.map((ch,i)=>{
-    const d=channelData[ch.handle];
-    const p=d?.live?`🔴 ${d.live.title}`:d?.recent?.length?`📼 ${d.recent[0]?.title||''}`:'…';
-    return `<div class="guide-row ${i===current?'active':''}" onclick="tune(${i})"><span class="gr-n">${ch.id}</span><span style="font-size:16px">${ch.emoji}</span><span class="gr-name">${ch.name}</span><span class="gr-prog">${p}</span></div>`;
+  $('guide').innerHTML = PROGRAMS.map(p=>{
+    const ch=channelBySlug(p.ch); const cur=isCurrent(p);
+    const days = p.special ? 'Especial / salteado' : (p.days?.length===1 ? ['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'][p.days[0]] : 'Lun a Vie');
+    return `<div class="program ${cur?'current':''} ${p.special?'special':''}" onclick="tune(${CHANNELS.indexOf(ch)})"><div class="ptime">${p.start} ${p.end && p.end!=='--:--'?'– '+p.end:''} <span class="state ${cur?'live':'idle'}">${cur?'En horario':days}</span></div><div class="ptitle">${p.title}</div><div class="pdesc">${p.desc}</div><div class="pchan">${ch.name}</div></div>`;
   }).join('');
 }
-
-async function tune(i){
-  current=i;const ch=CHANNELS[i];
-  document.getElementById('now-num').textContent=ch.id;
-  document.getElementById('now-name').textContent=ch.name;
-  document.getElementById('now-prog').textContent=ch.sub;
-  renderSidebar();renderGuide();showLoading(true);
-  await loadChannel(ch);renderSidebar();renderGuide();
-  const d=channelData[ch.handle];showLoading(false);
-  if(!d||d.error){setNoLive([]);document.getElementById('now-prog').textContent='Error al conectar';return;}
-  if(d.live){playVideo(d.live.videoId);document.getElementById('now-prog').textContent=`🔴 EN VIVO · ${d.live.title}`;}
-  else{setNoLive(d.recent||[]);document.getElementById('now-prog').textContent='Sin transmisión en vivo ahora';}
+function tune(i){
+  current=i; const ch=CHANNELS[i]; const prog=programsForChannel(ch.slug).find(isCurrent);
+  $('nowNum').textContent=ch.id; $('nowName').textContent=ch.name; $('nowProg').textContent=prog ? `🔴 En horario: ${prog.title} · ${prog.start} a ${prog.end}` : 'Sin programa fijo en este momento. Se puede abrir el vivo o ver grabados.';
+  renderChannels(); renderGuide(); loadPlayer(ch, prog); loadRecent(ch);
 }
-
-function playVideo(id){
-  document.getElementById('splash').style.display='none';
-  document.getElementById('no-live').style.display='none';
-  const f=document.getElementById('yt-frame');f.style.display='block';
-  f.src=`https://www.youtube.com/embed/${id}?autoplay=1&rel=0`;
+function liveCacheKey(ch){ return `tribunotv_live_${ch.slug}`; }
+function readLiveCache(ch){
+  try{
+    const raw = localStorage.getItem(liveCacheKey(ch));
+    if(!raw) return null;
+    const data = JSON.parse(raw);
+    if(!data.savedAt) return null;
+    const age = (Date.now() - data.savedAt) / 60000;
+    return age <= LIVE_CACHE_MINUTES ? data : null;
+  }catch(e){ return null; }
 }
-
-function setNoLive(recent){
-  document.getElementById('splash').style.display='none';
-  const f=document.getElementById('yt-frame');f.style.display='none';f.src='';
-  const nl=document.getElementById('no-live');nl.style.display='flex';
-  document.getElementById('videos-list').innerHTML=recent.length
-    ?recent.map(v=>`<div class="vid-thumb" onclick="playVideo('${v.videoId}')"><img src="${v.thumb}" alt="" loading="lazy"><div class="vid-thumb-title">${v.title}</div></div>`).join('')
-    :`<p style="color:var(--muted);font-size:12px">No hay videos disponibles</p>`;
+function writeLiveCache(ch, payload){
+  try{ localStorage.setItem(liveCacheKey(ch), JSON.stringify({...payload, savedAt:Date.now()})); }catch(e){}
 }
-
-function showLoading(s){document.getElementById('loading-overlay').style.display=s?'flex':'none';}
-function prevCh(){tune((current-1+CHANNELS.length)%CHANNELS.length);}
-function nextCh(){tune((current+1)%CHANNELS.length);}
-function refreshCurrent(){if(current>=0)tune(current);}
-function toggleGuide(){guideOpen=!guideOpen;document.getElementById('guide').classList.toggle('open',guideOpen);}
+async function findLiveVideo(ch, force=false){
+  if(!force){
+    const cached = readLiveCache(ch);
+    if(cached) return cached;
+  }
+  const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${encodeURIComponent(ch.channelId)}&eventType=live&type=video&maxResults=1&key=${encodeURIComponent(API_KEY)}`;
+  const res = await fetch(url);
+  if(!res.ok){
+    let msg='Error consultando YouTube';
+    try{ const err=await res.json(); msg = err.error?.message || msg; }catch(e){}
+    throw new Error(msg);
+  }
+  const data = await res.json();
+  const item = data.items && data.items[0];
+  const payload = item ? { live:true, videoId:item.id.videoId, title:item.snippet?.title || 'Transmisión en vivo', checkedAt:new Date().toISOString() } : { live:false, videoId:null, title:null, checkedAt:new Date().toISOString() };
+  writeLiveCache(ch, payload);
+  return payload;
+}
+async function loadPlayer(ch, prog, force=false){
+  $('splash').style.display='none'; $('ytFrame').style.display='none'; $('ytFrame').src=''; $('playbox').style.display='block';
+  $('playTitle').textContent = prog ? `${prog.title} · ${ch.name}` : ch.name;
+  $('playText').innerHTML = `Buscando transmisión en vivo con API limitada y caché de ${LIVE_CACHE_MINUTES} minutos...`;
+  $('playActions').innerHTML = `<a class="linkbtn secondary" href="${ch.liveUrl}" target="_blank" rel="noopener">▶ Abrir en YouTube</a><a class="linkbtn secondary" href="${ch.videosUrl}" target="_blank" rel="noopener">📼 Últimos videos</a>`;
+  if(!ch.channelId){
+    $('playText').innerHTML = `Falta el <b>channelId</b> de este canal. Abrí el vivo oficial o la pestaña de videos.`;
+    return;
+  }
+  try{
+    const result = await findLiveVideo(ch, force);
+    if(result.live && result.videoId){
+      $('ytFrame').src = `https://www.youtube.com/embed/${encodeURIComponent(result.videoId)}?autoplay=1&rel=0`;
+      $('ytFrame').style.display='block';
+      $('playbox').style.display='none';
+      $('nowProg').textContent = `🔴 EN VIVO · ${result.title}`;
+    }else{
+      $('playTitle').textContent = prog ? `${prog.title} · ${ch.name}` : `${ch.name} sin vivo detectado`;
+      $('playText').innerHTML = prog
+        ? `El programa figura en horario, pero YouTube no devolvió un vivo activo. Puede estar por iniciar, haberse cortado o estar publicado con otra configuración.`
+        : `No hay transmisión en vivo detectada en este momento. Podés abrir el canal en YouTube o ver los últimos videos.`;
+      $('playActions').innerHTML = `<a class="linkbtn" href="${ch.liveUrl}" target="_blank" rel="noopener">▶ Probar vivo en YouTube</a><a class="linkbtn secondary" href="${ch.videosUrl}" target="_blank" rel="noopener">📼 Últimos videos</a>`;
+    }
+  }catch(e){
+    $('playTitle').textContent = `No se pudo consultar ${ch.name}`;
+    $('playText').innerHTML = `La consulta a YouTube falló: <b>${String(e.message).replace(/[<>]/g,'')}</b>. Revisá que la API Key esté habilitada para YouTube Data API v3 y que el dominio permitido coincida con el sitio real.`;
+    $('playActions').innerHTML = `<a class="linkbtn" href="${ch.liveUrl}" target="_blank" rel="noopener">▶ Abrir vivo en YouTube</a><a class="linkbtn secondary" href="${ch.videosUrl}" target="_blank" rel="noopener">📼 Últimos videos</a>`;
+  }
+}
+function refreshCurrentLive(){
+  if(current < 0){ showCurrentProgram(); return; }
+  const ch = CHANNELS[current];
+  const prog = programsForChannel(ch.slug).find(isCurrent);
+  loadPlayer(ch, prog, true);
+}
+async function loadRecent(ch = CHANNELS[current] || CHANNELS[0]){
+  const box=$('recentList');
+  try{
+    const res = await fetch(ch.cache,{cache:'no-store'});
+    if(!res.ok) throw new Error('Sin cache JSON todavía');
+    const data = await res.json();
+    box.innerHTML = (data.items || []).slice(0,5).map(v=>`<a class="video-card" href="${v.url}" target="_blank" rel="noopener"><b>${v.title}</b><small>${v.published || ''}</small></a>`).join('') || `<div class="note">Cache vacío para ${ch.name}.</div>`;
+  }catch(e){
+    box.innerHTML = `<a class="video-card" href="${ch.videosUrl}" target="_blank" rel="noopener"><b>Ver últimos videos de ${ch.name}</b><small>Backend/RSS pendiente: ${ch.cache}</small></a><div class="note">Recomendado: crear un cron que lea RSS de YouTube, guarde JSON por canal y lo sirva desde /cache/youtube/.</div>`;
+  }
+}
+function showCurrentProgram(){ const p=currentProgram(); if(p){ const ch=channelBySlug(p.ch); tune(CHANNELS.indexOf(ch)); } else { $('nowName').textContent='No hay programa fijo ahora'; $('nowProg').textContent='Elegí un canal para abrir vivo o grabados.'; } }
+function prevChannel(){ tune((current-1+CHANNELS.length)%CHANNELS.length); }
+function nextChannel(){ tune((current+1)%CHANNELS.length); }
+renderChannels(); renderGuide(); loadRecent(); showCurrentProgram();
 </script>
 </body>
 </html>
