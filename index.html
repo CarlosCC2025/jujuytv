@@ -619,7 +619,7 @@ const CHANNELS = [
   { id: 4, name: "El Tribuno",          handle: "eltribunojujuy",   sub: "Noticias",              emoji: "🗞️" },
 ];
 
-let API_KEY = '';
+const API_KEY = 'AIzaSyAHehii1CnI_ZMbPAkqWD73XzX82eJyw3A';
 let current = -1;
 let guideOpen = false;
 let channelData = {}; // { handle: { channelId, live: {videoId, title}, recent: [] } }
@@ -632,45 +632,13 @@ function updateClock() {
 updateClock();
 setInterval(updateClock, 1000);
 
-// ── SETUP ──
-function showSetup() {
-  document.getElementById('setup-screen').style.display = 'flex';
-}
-
-function startApp() {
-  const key = document.getElementById('api-key-input').value.trim();
-  if (!key || key.length < 20) {
-    showError('Ingresá una API Key válida (comienza con AIza...)');
-    return;
-  }
-  API_KEY = key;
-  localStorage.setItem('jtv_apikey', key);
-  document.getElementById('api-key-bar').value = key;
-  document.getElementById('setup-screen').style.display = 'none';
-  initApp();
-}
-
-function showError(msg) {
-  const el = document.getElementById('error-msg');
-  el.textContent = msg;
-  el.style.display = 'block';
-}
-
 // ── INIT ──
 window.onload = () => {
-  const saved = localStorage.getItem('jtv_apikey');
-  if (saved) {
-    API_KEY = saved;
-    document.getElementById('api-key-bar').value = saved;
-    document.getElementById('api-key-input').value = saved;
-    document.getElementById('setup-screen').style.display = 'none';
-    initApp();
-  }
+  document.getElementById('setup-screen').style.display = 'none';
+  initApp();
 };
 
 function reloadAll() {
-  const key = document.getElementById('api-key-bar').value.trim();
-  if (key) { API_KEY = key; localStorage.setItem('jtv_apikey', key); }
   channelData = {};
   initApp();
 }
